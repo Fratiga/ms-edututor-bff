@@ -54,6 +54,8 @@ public class SecurityConfig {
 		// El frontend oficial (artifacts/edututor) es Vite + React en el 5173,
 		// no Angular — se deja 4200 también por si se prueba con otro cliente local.
 		c.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:4200"));
+		// Frontend productivo servido como sitio estático S3 (sin CloudFront/HTTPS).
+		c.setAllowedOriginPatterns(List.of("http://*.s3-website*.amazonaws.com"));
 		c.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		// El frontend también envía X-User-Id/X-User-Role (el BFF los ignora para
 		// autorización real, que sale del JWT, pero el preflight igual los exige).
