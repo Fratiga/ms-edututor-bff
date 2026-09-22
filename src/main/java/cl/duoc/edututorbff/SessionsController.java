@@ -19,25 +19,25 @@ public class SessionsController {
 	@GetMapping
 	@PreAuthorize("hasAnyRole('ADMIN', 'COORDINADOR', 'ESTUDIANTE')")
 	public Object listar(JwtAuthenticationToken auth, @RequestParam Map<String, String> filtros) {
-		return domainServiceClient.forward(auth, "GET", "/sessions", null);
+		return domainServiceClient.forward("sessions", auth, "GET", "/sessions", null);
 	}
 
 	@GetMapping("/{id}")
 	@PreAuthorize("hasAnyRole('ADMIN', 'COORDINADOR', 'ESTUDIANTE')")
 	public Object obtener(JwtAuthenticationToken auth, @PathVariable String id) {
-		return domainServiceClient.forward(auth, "GET", "/sessions/" + id, null);
+		return domainServiceClient.forward("sessions", auth, "GET", "/sessions/" + id, null);
 	}
 
 	@PostMapping
 	@PreAuthorize("hasAnyRole('ESTUDIANTE', 'COORDINADOR', 'ADMIN')")
 	public Object crear(JwtAuthenticationToken auth, @RequestBody Map<String, Object> sesion) {
-		return domainServiceClient.forward(auth, "POST", "/sessions", sesion);
+		return domainServiceClient.forward("sessions", auth, "POST", "/sessions", sesion);
 	}
 
 	// Solo quien coordina o administra puede mover el estado de la sesión.
 	@PutMapping("/{id}/status")
 	@PreAuthorize("hasAnyRole('COORDINADOR', 'ADMIN')")
 	public Object cambiarEstado(JwtAuthenticationToken auth, @PathVariable String id, @RequestBody Map<String, String> estado) {
-		return domainServiceClient.forward(auth, "PUT", "/sessions/" + id + "/status", estado);
+		return domainServiceClient.forward("sessions", auth, "PUT", "/sessions/" + id + "/status", estado);
 	}
 }

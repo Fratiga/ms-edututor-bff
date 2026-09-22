@@ -17,16 +17,34 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 // (sessions, catalog, report, audit). Cada llamada sale con el contexto del
 // usuario autenticado en cabeceras propias — los microservicios de dominio no
 // vuelven a hablar con Entra, confían en lo que el BFF ya validó.
+//
+// Cada dominio vive en su propio host:puerto (ec2-apps corre los 4 contenedores
+// por separado), así que se mantiene un RestClient por dominio en vez de una
+// única base-url compartida.
 @Component
 public class DomainServiceClient {
 
-	private final RestClient restClient;
+	private final Map<String, RestClient> clientsPorDominio;
 
-	public DomainServiceClient(@Value("${edututor.domain-services.base-url}") String baseUrl) {
-		this.restClient = RestClient.builder().baseUrl(baseUrl).build();
+	public DomainServiceClient(
+			@Value("${edututor.domain-services.catalog-url}") String catalogUrl,
+			@Value("${edututor.domain-services.sessions-url}") String sessionsUrl,
+			@Value("${edututor.domain-services.audit-url}") String auditUrl,
+			@Value("${edututor.domain-services.report-url}") String reportUrl) {
+		this.clientsPorDominio = Map.of(
+			"catalog", RestClient.builder().baseUrl(catalogUrl).build(),
+			"sessions", RestClient.builder().baseUrl(sessionsUrl).build(),
+			"audit", RestClient.builder().baseUrl(auditUrl).build(),
+			"report", RestClient.builder().baseUrl(reportUrl).build()
+		);
 	}
 
-	public Object forward(JwtAuthenticationToken auth, String method, String path, Object body) {
+	public Object forward(String dominio, JwtAuthenticationToken auth, String method, String path, Object body) {
+		RestClient restClient = clientsPorDominio.get(dominio);
+		if (restClient == null) {
+			throw new IllegalArgumentException("Dominio de microservicio desconocido: " + dominio);
+		}
+
 		Jwt jwt = auth.getToken();
 		List<String> rolesList = jwt.getClaimAsStringList("roles");
 		String roles = String.join(",", rolesList == null ? List.of() : rolesList);
@@ -44,11 +62,11 @@ public class DomainServiceClient {
 				? req.retrieve().body(Object.class)
 				: req.body(body).retrieve().body(Object.class);
 		} catch (RestClientException e) {
-			// Los microservicios de dominio todavía no existen / no están desplegados.
+			// El microservicio de dominio no respondió (aún no desplegado / caído).
 			// Devolvemos el contexto que se habría propagado, para dejar
 			// evidencia de que la propagación de identidad ya está implementada.
 			return Map.of(
-				"aviso", "Microservicio de dominio no disponible en " + path,
+				"aviso", "Microservicio de dominio '" + dominio + "' no disponible en " + path,
 				"contexto_propagado", Map.of(
 					"X-User-Id", jwt.getSubject(),
 					"X-User-Name", jwt.getClaimAsString("name"),

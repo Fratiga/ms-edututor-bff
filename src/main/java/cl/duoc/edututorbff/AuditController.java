@@ -21,11 +21,11 @@ public class AuditController {
 
 	@GetMapping("/timeline")
 	public Object timeline(JwtAuthenticationToken auth) {
-		return domainServiceClient.forward(auth, "GET", "/audit/timeline", null);
+		return domainServiceClient.forward("audit", auth, "GET", "/audit/timeline", null);
 	}
 
 	@GetMapping("/session/{id}")
 	public Object porSesion(JwtAuthenticationToken auth, @PathVariable String id) {
-		return domainServiceClient.forward(auth, "GET", "/audit/session/" + id, null);
+		return domainServiceClient.forward("audit", auth, "GET", "/audit/session/" + id, null);
 	}
 }

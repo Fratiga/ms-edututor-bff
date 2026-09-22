@@ -20,11 +20,11 @@ public class ReportController {
 
 	@GetMapping("/kpis")
 	public Object kpis(JwtAuthenticationToken auth, @RequestParam(defaultValue = "last24h") String range) {
-		return domainServiceClient.forward(auth, "GET", "/report/kpis?range=" + range, null);
+		return domainServiceClient.forward("report", auth, "GET", "/report/kpis?range=" + range, null);
 	}
 
 	@GetMapping("/top-services")
 	public Object topServices(JwtAuthenticationToken auth, @RequestParam(defaultValue = "last7d") String range) {
-		return domainServiceClient.forward(auth, "GET", "/report/top-services?range=" + range, null);
+		return domainServiceClient.forward("report", auth, "GET", "/report/top-services?range=" + range, null);
 	}
 }

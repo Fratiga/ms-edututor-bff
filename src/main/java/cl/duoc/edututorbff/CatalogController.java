@@ -21,18 +21,18 @@ public class CatalogController {
 	@GetMapping("/services")
 	@PreAuthorize("hasAnyRole('ADMIN', 'COORDINADOR')")
 	public Object listarServicios(JwtAuthenticationToken auth) {
-		return domainServiceClient.forward(auth, "GET", "/catalog/services", null);
+		return domainServiceClient.forward("catalog", auth, "GET", "/catalog/services", null);
 	}
 
 	@PostMapping("/services")
 	@PreAuthorize("hasRole('ADMIN')")
 	public Object crearServicio(JwtAuthenticationToken auth, @RequestBody Map<String, Object> servicio) {
-		return domainServiceClient.forward(auth, "POST", "/catalog/services", servicio);
+		return domainServiceClient.forward("catalog", auth, "POST", "/catalog/services", servicio);
 	}
 
 	@PutMapping("/services/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	public Object actualizarServicio(JwtAuthenticationToken auth, @PathVariable String id, @RequestBody Map<String, Object> servicio) {
-		return domainServiceClient.forward(auth, "PUT", "/catalog/services/" + id, servicio);
+		return domainServiceClient.forward("catalog", auth, "PUT", "/catalog/services/" + id, servicio);
 	}
 }
