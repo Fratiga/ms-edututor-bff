@@ -16,10 +16,11 @@ public class CatalogController {
 		this.domainServiceClient = domainServiceClient;
 	}
 
-	// Según el documento de arquitectura: /api/catalog/** es ADMIN/COORDINADOR,
-	// no abierto a ESTUDIANTE.
+	// Lectura abierta también a ESTUDIANTE: el flujo de agendar sesión (desde
+	// Catálogo o desde Sesiones) necesita listar los servicios disponibles sin
+	// importar el rol. Crear/editar servicios sigue siendo solo ADMIN.
 	@GetMapping("/services")
-	@PreAuthorize("hasAnyRole('ADMIN', 'COORDINADOR')")
+	@PreAuthorize("hasAnyRole('ADMIN', 'COORDINADOR', 'ESTUDIANTE')")
 	public Object listarServicios(JwtAuthenticationToken auth) {
 		return domainServiceClient.forward("catalog", auth, "GET", "/catalog/services", null);
 	}
