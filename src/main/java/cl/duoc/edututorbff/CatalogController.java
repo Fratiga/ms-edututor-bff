@@ -20,7 +20,7 @@ public class CatalogController {
 	// Catálogo o desde Sesiones) necesita listar los servicios disponibles sin
 	// importar el rol. Crear/editar servicios sigue siendo solo ADMIN.
 	@GetMapping("/services")
-	@PreAuthorize("hasAnyRole('ADMIN', 'COORDINADOR', 'ESTUDIANTE')")
+	@PreAuthorize("hasAnyRole('ADMIN', 'COORDINADOR', 'ESTUDIANTE', 'AUDITOR')")
 	public Object listarServicios(JwtAuthenticationToken auth) {
 		return domainServiceClient.forward("catalog", auth, "GET", "/catalog/services", null);
 	}
