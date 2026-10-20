@@ -36,4 +36,24 @@ public class CatalogController {
 	public Object actualizarServicio(JwtAuthenticationToken auth, @PathVariable String id, @RequestBody Map<String, Object> servicio) {
 		return domainServiceClient.forward("catalog", auth, "PUT", "/catalog/services/" + id, servicio);
 	}
+
+	// Directorio de tutores. Lectura para todos los roles (la página necesita los
+	// nombres para mostrar quién dicta cada sesión); alta y cambios, solo ADMIN.
+	@GetMapping("/tutors")
+	@PreAuthorize("hasAnyRole('ADMIN', 'COORDINADOR', 'ESTUDIANTE', 'AUDITOR')")
+	public Object listarTutores(JwtAuthenticationToken auth) {
+		return domainServiceClient.forward("catalog", auth, "GET", "/catalog/tutors", null);
+	}
+
+	@PostMapping("/tutors")
+	@PreAuthorize("hasRole('ADMIN')")
+	public Object crearTutor(JwtAuthenticationToken auth, @RequestBody Map<String, Object> tutor) {
+		return domainServiceClient.forward("catalog", auth, "POST", "/catalog/tutors", tutor);
+	}
+
+	@PutMapping("/tutors/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public Object actualizarTutor(JwtAuthenticationToken auth, @PathVariable String id, @RequestBody Map<String, Object> tutor) {
+		return domainServiceClient.forward("catalog", auth, "PUT", "/catalog/tutors/" + id, tutor);
+	}
 }
