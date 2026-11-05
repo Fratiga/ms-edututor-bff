@@ -27,4 +27,10 @@ public class ReportController {
 	public Object topServices(JwtAuthenticationToken auth, @RequestParam(defaultValue = "last7d") String range) {
 		return domainServiceClient.forward("report", auth, "GET", "/report/top-services?range=" + range, null);
 	}
+
+	// Alertas de analítica que audit publica en sessions.alerts y report guarda.
+	@GetMapping("/alerts")
+	public Object alerts(JwtAuthenticationToken auth, @RequestParam(defaultValue = "50") int limit) {
+		return domainServiceClient.forward("report", auth, "GET", "/report/alerts?limit=" + limit, null);
+	}
 }
