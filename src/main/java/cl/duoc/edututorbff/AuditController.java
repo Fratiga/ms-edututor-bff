@@ -24,6 +24,12 @@ public class AuditController {
 		return domainServiceClient.forward("audit", auth, "GET", "/audit/timeline", null);
 	}
 
+	// Estado del tópico de eventos: offset final por partición y avance/LAG de cada grupo.
+	@GetMapping("/kafka")
+	public Object kafka(JwtAuthenticationToken auth) {
+		return domainServiceClient.forward("audit", auth, "GET", "/audit/kafka/stream", null);
+	}
+
 	@GetMapping("/session/{id}")
 	public Object porSesion(JwtAuthenticationToken auth, @PathVariable String id) {
 		return domainServiceClient.forward("audit", auth, "GET", "/audit/session/" + id, null);
